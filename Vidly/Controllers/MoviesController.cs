@@ -24,20 +24,18 @@ namespace Vidly.Controllers
 
         public ActionResult New()
         {
-            var genres = _context.Genres.ToList();
-
-            var viewModel = new MovieFormViewModel
-            {
-                Genres = genres,
-                Command = "New Movie"
-            };
-
-            return View("MovieForm", viewModel);
+            return MovieForm();
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Movie movie)
         {
-            movie.DateAdded = DateTime.Now;
+            if (!ModelState.IsValid)
+            {
+                return MovieForm(movie);
+            }
+
             if (movie.Id == 0)
             {
                 _context.Movies.Add(movie);
@@ -49,6 +47,7 @@ namespace Vidly.Controllers
                 dbMovie.ReleaseDate = movie.ReleaseDate;
                 dbMovie.Name = movie.Name;
                 dbMovie.NumberInStock = movie.NumberInStock;
+                dbMovie.DateAdded = DateTime.Now;
             }
 
             _context.SaveChanges();
@@ -79,16 +78,30 @@ namespace Vidly.Controllers
                 return HttpNotFound();
             }
 
-            var viewModel = new MovieFormViewModel
-            {
-                Movie = movie,
-                Genres = _context.Genres.ToList(),
-                Command = "Edit Movie"
-            };
-
-            return View("MovieForm", viewModel);
+            return MovieForm(movie);
         }
 
+        public ActionResult MovieForm()
+        {
+            var viewModel = new MovieFormViewModel()
+            {
+                Genres = Genres,
+            };
+
+            return View(nameof(MovieForm), viewModel);
+        }
+
+        public ActionResult MovieForm(Movie movie)
+        {
+            var viewModel = new MovieFormViewModel(movie)
+            {
+                Genres = Genres,
+            };
+
+            return View(nameof(MovieForm), viewModel);
+        }
+
+        private List<Genre> Genres => _context.Genres.ToList();
         private IQueryable<Movie> Movies => _context.Movies.Include(m => m.Genre);
 
         // GET: Movies/Random
