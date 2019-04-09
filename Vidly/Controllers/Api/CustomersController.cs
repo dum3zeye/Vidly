@@ -42,32 +42,36 @@ namespace Vidly.Controllers.Api
         }
 
         [HttpPut]
-        public void UpdateCustomer(int id, CustomerDto customerDto)
+        public IHttpActionResult UpdateCustomer(int id, CustomerDto customerDto)
         {
             if (!ModelState.IsValid)
             {
-                throw new HttpResponseException(HttpStatusCode.BadRequest);
+                return BadRequest();
             }
 
             if (!(CustomerInDb(id) is Customer customerInDb))
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return NotFound();
             }
 
             Mapper.Map(customerDto, customerInDb);
 
             _context.SaveChanges();
+
+            return Ok();
         }
 
         [HttpDelete]
-        public void DeleteCustomer(int id)
+        public IHttpActionResult DeleteCustomer(int id)
         {
             if (!(CustomerInDb(id) is Customer customer))
             {
-                throw new HttpResponseException(HttpStatusCode.NotFound);
+                return NotFound();
             }
             _context.Customers.Remove(customer);
             _context.SaveChanges();
+
+            return Ok();
         }
 
         private Customer CustomerInDb(int id)
