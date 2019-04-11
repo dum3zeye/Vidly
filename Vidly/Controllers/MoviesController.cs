@@ -57,9 +57,7 @@ namespace Vidly.Controllers
 
         public ViewResult Index()
         {
-            var movies = Movies.ToList();
-
-            return View(movies);
+            return View();
         }
 
         public ActionResult Details(int id)
@@ -104,7 +102,6 @@ namespace Vidly.Controllers
         private List<Genre> Genres => _context.Genres.ToList();
         private IQueryable<Movie> Movies => _context.Movies.Include(m => m.Genre);
 
-        // GET: Movies/Random
         public ActionResult Random()
         {
             var movie = new Movie() { Name = "Shrek!" };

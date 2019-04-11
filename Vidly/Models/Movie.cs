@@ -23,6 +23,6 @@ namespace Vidly.Models
         [Range(1, 20)]
         public int NumberInStock { get; set; }
 
-        public DateTime DateAdded { get; set; }
+        public DateTime DateAdded { get; set; } = DateTime.Now;
     }
 }
