@@ -15,16 +15,6 @@ namespace Vidly.Controllers.Api
     {
         private readonly ApplicationDbContext _context = new ApplicationDbContext();
 
-        public IEnumerable<RentalDto> GetRentals()
-        {
-            return Rentals.Include(c => c.Movie).Include(c => c.Id).Select(Mapper.Map<Rental, RentalDto>);
-        }
-
-        public IHttpActionResult GetRental(int id)
-        {
-            return RentalInDatabase(id) is Rental rental ? Ok(Mapper.Map<Rental, RentalDto>(rental)) : (IHttpActionResult)NotFound();
-        }
-
         [HttpPost]
         public IHttpActionResult CreateRental(RentalDto rentalDto)
         {
@@ -59,52 +49,13 @@ namespace Vidly.Controllers.Api
             return Ok();
         }
 
-        [HttpPut]
-        public IHttpActionResult UpdateRental(int id, RentalDto rentalDto)
-        {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest();
-            }
-
-            if (!(RentalInDatabase(id) is Rental rental))
-            {
-                return NotFound();
-            }
-
-            Mapper.Map(rentalDto, rental);
-
-            SaveChanges();
-
-            return Ok();
-        }
-
-        [HttpDelete]
-        public IHttpActionResult DeleteRental(int id)
-        {
-            if (!(RentalInDatabase(id) is Rental rental))
-            {
-                return NotFound();
-            }
-
-            Rentals.Remove(rental);
-            SaveChanges();
-
-            return Ok();
-        }
-
-        private DbSet<Rental> Rentals => _context.Rentals;
         private DbSet<Movie> Movies => _context.Movies;
+
         private DbSet<Customer> Customers => _context.Customers;
 
         private void SaveChanges()
         {
             _context.SaveChanges();
-        }
-
-        private Rental RentalInDatabase(int id)
-        {
-            return Rentals.SingleOrDefault(r => r.Id == id);
         }
     }
 }
